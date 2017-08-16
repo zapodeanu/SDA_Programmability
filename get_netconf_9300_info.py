@@ -197,14 +197,18 @@ def get_input_timeout(message, wait_time):
 
 def main():
     """
-    This code will collect info from a Catalyst 9300 using NETCONF.
-    The user will be asked to input a maximum air intake temperature threshold for normal operation.
+    This code will get a switch hostname from a Catalyst 9300 using NETCONF.
+    The user will be asked to input a maximum air inlet temperature threshold for normal operation.
     If no user input, the code will use the default temperature - 46 Celsius.
-    The code will loop while checking the switch temperature. The loop will continue as long as the intake
-    We will find out the switch hostname, up interfaces, and interfaces IP addresses.
-    The script will collect Outdoor temperature for the location where the switch is located using the REST APIs
-    from weather.gov. It will collect the switch temperature and state suing NETCONF.
-    The temperature info and some switch data will be tweeted using the REST APIs from twitter.com
+    The code has an infinite loop to check the switch inlet air temperature.
+    The loop will continue as long as the inlet air temperature will be lower that the threshold.
+    When the temperature exceeds the threshold, we will find out the switch hostname,
+    the interfaces in an operational state "up", and interfaces IP addresses.
+    The script will collect from weather.gov, using the REST APIs, the outdoor temperature for the
+    location where the switch is located.
+    It will collect the switch temperature and temperature sensor state using NETCONF.
+    The temperature info, and switch hostname, and IP addresses for "up" interfaces will be tweeted using
+    the REST APIs from twitter.com
     """
 
     print('\nThis simple code will use NETCONF to connect to a network device running 16.6.1\n')
