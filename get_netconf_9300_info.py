@@ -213,7 +213,7 @@ def main():
 
     print('\nThis simple code will use NETCONF to connect to a network device running 16.6.1\n')
 
-    print('\nIP address or hostname of your Catalyst 9300 switch: HOST = "172.16.11.10"',
+    print('\nIP address or hostname of your Catalyst 9300 switch: HOST = ', HOST,
           '\nUse the NETCONF port -  PORT = ', PORT,
           '\nUse the user credentials -  username = ', USER, ' password = xxxxx')
 
@@ -221,22 +221,23 @@ def main():
           '\n - hostname',
           '\n - the list of all interfaces operational state up',
           '\n - interface names, configured IPv4 addresses',
-          '\n - switch inlet temperature and outside temperature (from weather.gov)',
+          '\n - switch inlet temperature and outdoor temperature (from weather.gov)',
           '\n - tweet temperature alerts if switch temperature exceeds user input threshold')
-
-    # user input temperature threshold
-
-    temp_threshold = get_input_timeout('\nInput temperature threshold, in Celsius, (default is 46)', 10)
-    if temp_threshold == None:
-        temp_threshold = 46
-    temp_threshold = int(temp_threshold)
-    print('\nTemperature threshold set up to: ', temp_threshold, ' Celsius')
 
     # get the device hostname
 
     device_hostname = get_hostname()
+    print('\nThe network device hostname is:', device_hostname)
 
     while True:
+
+        # user input temperature threshold
+
+        temp_threshold = get_input_timeout('\nInput temperature threshold, in Celsius, (default is 46)', 10)
+        if temp_threshold == None:
+            temp_threshold = 46
+        temp_threshold = int(temp_threshold)
+        print('\nTemperature threshold set up to: ', temp_threshold, ' Celsius')
 
         # get temperature state
 
@@ -246,64 +247,58 @@ def main():
         print('Switch ', device_hostname, ' temperature sensor state: ', state)
         if temp <= temp_threshold:
             print('Temperature is lower that threshold!')
-            time.sleep(30)
+            time.sleep(20)
         else:
             print('\nSwitch ', device_hostname, ' intake temperature exceeded threshold')
             break
 
+    # get the outdoor temp
 
-    # get the outside temp
     outside_temperature = get_outside_temperature()
     print('\nLake Oswego, OR, Temperature is : ', outside_temperature, ' Celsius')
 
-    # get the device hostname
-
-    device_hostname = get_hostname()
-    print('\nThe network device hostname is:', device_hostname)
-
-    # get temperature state
-
-    temp = get_temperature("Temp Sensor 0")[0]
-    state = get_temperature("Temp Sensor 0")[1]
-    print('\nSwitch Temperature: ', temp, ' Celsius')
-    print('\nSwitch Temperature: ', state)
-
     # tweet the temperature info, see https://github.com/ryanmcgrath/twython for documentation
+
     twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-    twitter_temp = 'Lake Oswego, OR, Outside Temp (in Celsius): ' + str(outside_temperature) + ', Cat 9K Switch Temp (in Celsius): ' + str(temp) + ', Cat 9K Switch Temp state: ' + state
+    twitter_temp = device_hostname + ' ALERT: inlet air temp (in Celsius): ' + str(temp) + ', state: ' + state + ', Lake Oswego, OR, temp (in Celsius): ' + str(outside_temperature)
     try:
         twitter.update_status(status=twitter_temp)
     except:
         pass
-    print('\nTwitter temp status update')
+    print('\nTweet temp status update: ', twitter_temp)
 
     # get the device interfaces operational state up
 
     interfaces_up_list = get_up_interfaces()
-    print('\nThe network device has these interfaces in a operational state "up" :')
-    twitter_intf_up = "Cat 9k Switch Intf up: "
+    print('\nThe ', device_hostname, ' has these interfaces in a operational state "up" :')
     for intf in interfaces_up_list:
-        print('', intf)
-        twitter_intf_up += intf + ", "
+        print('    ', intf)
 
-    # twitter intf up message
-    try:
-        twitter.update_status(status=twitter_intf_up)
-    except:
-        pass
-    print('\nTwitter temp status update')
-    print(twitter_intf_up)
-
-    # get the admin, operational state and IPv4 address for each interface
+    # get the IPv4 address for each "up" interface
 
     interface_info = []
     for intf in interfaces_up_list:
         ip_address = get_interface_ip(intf)
-        interface_info.append({'interface': intf, 'ip address': ip_address})
+        if ip_address != 'not configured':  # append IP addresses only if they exist
+            interface_info.append({'interface': intf, 'ip address': ip_address})
+
+    # collect IP addresses for the "up" interfaces
+
+    twitter_intf_up = device_hostname + ' intf up IP add: '
+    for intf in interface_info:
+        twitter_intf_up += ' ' + intf['ip address']
+
+    # tweet intf up IP addresses
+
+    try:
+        twitter.update_status(status=twitter_intf_up)
+    except:
+        pass
+    print('\nTweet interfaces "up" IP addresses: ', twitter_intf_up)
 
     # print interface info
 
-    print('\nThe network device "up" interfaces info:\n')
+    print('\nThe ', device_hostname, ' "up" interfaces IP addresses info:\n')
     print(' {0:25} {1:20} '.format('Interface', 'IP Address'))
     for intf in interface_info:
         print(' {0:25} {1:20} '.format(intf['interface'], intf['ip address']))
