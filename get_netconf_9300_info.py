@@ -3,22 +3,17 @@
 # !/usr/bin/env python3
 
 
-import requests
-import xml.dom.minidom
-import lxml.etree as ET
-import sys
-import json
-import time
-import datetime
-import requests.packages.urllib3
-import logging
-import sys
 import select
+import sys
+import time
+import xml.dom.minidom
 
-from twython import Twython
-
+import requests
+import requests.packages.urllib3
 from ncclient import manager
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from twython import Twython
+
 from twitter_init import APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # Disable insecure https warnings
@@ -234,7 +229,7 @@ def main():
         # user input temperature threshold
 
         temp_threshold = get_input_timeout('\nInput temperature threshold, in Celsius, (default is 46)', 10)
-        if temp_threshold == None:
+        if temp_threshold is None:
             temp_threshold = 46
         temp_threshold = int(temp_threshold)
         print('\nTemperature threshold set up to: ', temp_threshold, ' Celsius')
@@ -260,7 +255,8 @@ def main():
     # tweet the temperature info, see https://github.com/ryanmcgrath/twython for documentation
 
     twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-    twitter_temp = device_hostname + ' ALERT: inlet air temp (in Celsius): ' + str(temp) + ', state: ' + state + ', Lake Oswego, OR, temp (in Celsius): ' + str(outside_temperature)
+    twitter_temp = device_hostname + ' ALERT: inlet air temp (in Celsius): ' + str(
+        temp) + ', state: ' + state + ', Lake Oswego, OR, temp (in Celsius): ' + str(outside_temperature)
     try:
         twitter.update_status(status=twitter_temp)
     except:
