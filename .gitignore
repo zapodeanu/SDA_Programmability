@@ -96,3 +96,4 @@ ENV/
 .ropeproject
 
 /twitter_init.py
+/sda_init.py
