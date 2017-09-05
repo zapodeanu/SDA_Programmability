@@ -71,7 +71,7 @@ def create_area(area_name, ticket):
             "SITE"
         ],
         "systemGroup": False,
-        "parentId": "7a8e6ed5-db65-401b-8cf6-6382864b0508",
+        "parentId": "",
         "name": area_name,
         "id": ""
     }
