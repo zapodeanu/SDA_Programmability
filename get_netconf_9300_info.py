@@ -20,7 +20,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # Disable in
 
 # use the IP address or hostname of your 9300 switch
 
-HOST = '10.93.130.41'
+HOST = '10.93.130.45'
 
 # use the NETCONF port for your 9300 switch
 
@@ -242,7 +242,7 @@ def main():
         print('Switch ', device_hostname, ' temperature sensor state: ', state)
         if temp <= temp_threshold:
             print('Temperature is lower that threshold!')
-            time.sleep(20)
+            time.sleep(10)
         else:
             print('\nSwitch ', device_hostname, ' intake temperature exceeded threshold')
             break
