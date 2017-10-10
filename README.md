@@ -11,5 +11,5 @@
  
  dnac_apis.py
  
- - The script will create new areas, buildings, floors using data provided in .csv format. It will use google geo-location APIs to map the addresses to tghe coordinates needed to create the locations in DNA Center.
+ - The script will create new areas, buildings, floors using data provided in .csv format. It will use google geo-location APIs to map the addresses to the coordinates needed to create the locations in DNA Center.
  - The roadmap for this script is to import the location info from Prime Infrastructure and become part of a migration tool
