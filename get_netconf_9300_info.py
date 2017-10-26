@@ -34,7 +34,7 @@ PASS = 'cisco'
 
 def get_hostname():
     """
-    This function will retrieve the hostname from config via NETCONF.
+    This function will retrieve the switch configured hostname using NETCONF.
     :return hostname: device hostname
     """
 
@@ -43,7 +43,7 @@ def get_hostname():
                          device_params={'name': 'default'},
                          allow_agent=False, look_for_keys=False) as m:
         # XML filter to issue with the get operation
-        # IOS-XE 16.5+        YANG model called http://cisco.com/ns/yang/Cisco-IOS-XE-native
+        # IOS-XE 16.5+        YANG model "Cisco-IOS-XE-native"
         hostname_filter = '''
                           <filter>
                               <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
@@ -60,7 +60,7 @@ def get_hostname():
 
 def get_up_interfaces():
     """
-    This function will return the interfaces that are operational state up, via NETCONF.
+    This function will return the interfaces that are operational state up, using NETCONF.
     :return interfaces: list of device interfaces
     """
 
@@ -69,7 +69,7 @@ def get_up_interfaces():
                          device_params={'name': 'default'},
                          allow_agent=False, look_for_keys=False) as m:
         # XML filter to issue with the get operation
-        # IOS-XE 16.5+        YANG model called yang:http://cisco.com/ns/yang/Cisco-IOS-XE-native
+        # IOS-XE 16.5+        YANG model called "ietf-interfaces"
 
         interface_up_filter = '''
                             <filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -107,7 +107,7 @@ def get_interface_ip(interface):
                          device_params={'name': 'default'},
                          allow_agent=False, look_for_keys=False) as m:
         # XML filter to issue with the get operation
-        # IOS-XE 16.5+        YANG model called yang:ietf-interfaces
+        # IOS-XE 16.5+        YANG model called "ietf-interfaces"
 
         interface_state_filter = '''
                                     <filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -140,7 +140,7 @@ def get_temperature(sensor_number):
                          device_params={'name': 'default'},
                          allow_agent=False, look_for_keys=False) as m:
         # XML filter to issue with the get operation
-        # IOS-XE 16.6+        YANG model called "http://cisco.com/ns/yang/Cisco-IOS-XE-environment-oper"
+        # IOS-XE 16.6+        YANG model called "Cisco-IOS-XE-environment-oper"
         sensor_filter = '''
                         <filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
                             <environment-sensors xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-environment-oper">
@@ -198,7 +198,7 @@ def main():
     The code has an infinite loop to check the switch inlet air temperature.
     The loop will continue as long as the inlet air temperature will be lower that the threshold.
     When the temperature exceeds the threshold, we will find out the switch hostname,
-    the interfaces in an operational state "up", and interfaces IP addresses.
+    the interfaces in an operational state "up", and retrieve their IP addresses.
     The script will collect from weather.gov, using the REST APIs, the outdoor temperature for the
     location where the switch is located.
     It will collect the switch temperature and temperature sensor state using NETCONF.
