@@ -1,3 +1,4 @@
+
 # developed by Gabi Zapodeanu, TSA, GPO, Cisco Systems
 
 # !/usr/bin/env python3
@@ -11,7 +12,6 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from sda_init import GOOGLE_API_KEY
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # Disable insecure https warnings
-
 
 # use the DNA Center controller
 
@@ -31,8 +31,8 @@ def pprint(json_data):
 
 def get_service_ticket(username, password):
     """
-    Create the authorization ticket required to access APIC-EM
-    Call to APIC-EM - /ticket
+    Create the authorization ticket required to access DNA C
+    Call to DNA C - /ticket
     :param username: the username
     :param password: the password
     :return: ticket
@@ -76,7 +76,7 @@ def create_area(area_name, ticket):
         "id": ""
     }
     url = DNAC_URL + '/group'
-    header = {'content-type': 'application/json','X-Auth-Token': ticket}
+    header = {'content-type': 'application/json', 'X-Auth-Token': ticket}
     requests.post(url, data=json.dumps(payload), headers=header, verify=False)
 
 
@@ -122,7 +122,7 @@ def create_site(site_name, area_name, address, ticket):
         "id": ""
     }
     url = DNAC_URL + '/group'
-    header = {'content-type': 'application/json','X-Auth-Token': ticket}
+    header = {'content-type': 'application/json', 'X-Auth-Token': ticket}
     requests.post(url, data=json.dumps(payload), headers=header, verify=False)
 
 
@@ -174,14 +174,14 @@ def create_floor(site_name, floor_name, floor_number, ticket):
         "id": ""
     }
     url = DNAC_URL + '/group'
-    header = {'content-type': 'application/json','X-Auth-Token': ticket}
+    header = {'content-type': 'application/json', 'X-Auth-Token': ticket}
     requests.post(url, data=json.dumps(payload), headers=header, verify=False)
 
 
 def get_device_id(device_sn, ticket):
     """
     The function will return the DNA C device id for the device with serial number {device_sn}
-    :param device_sn:
+    :param device_sn: network device SN
     :param ticket: DNA C ticket
     :return: DNA C device id
     """
@@ -195,8 +195,8 @@ def get_device_id(device_sn, ticket):
 
 def assign_device_site(device_sn, site_name, ticket):
     """
-
-    :param device_sn:
+    This function will assign a device with the specified SN to a site with the name {site_name}
+    :param device_sn: network device SN
     :param site_name: DNA C site name
     :param ticket: DNA C ticket
     :return:
@@ -204,11 +204,10 @@ def assign_device_site(device_sn, site_name, ticket):
     site_id = get_site_id(site_name, ticket)
     device_id = get_device_id(device_sn, ticket)
     url = DNAC_URL + '/group/' + site_id + '/member'
-    payload = {"networkdevice":[device_id]}
-    header = {'content-type': 'application/json','X-Auth-Token': ticket}
-    response = requests.post(url, data=json.dumps(payload), headers=header, verify=False)
+    payload = {"networkdevice": [device_id]}
+    header = {'content-type': 'application/json', 'X-Auth-Token': ticket}
+    requests.post(url, data=json.dumps(payload), headers=header, verify=False)
     print('\nDevice with the SN: ', device_sn, 'assigned to site: ', site_name)
-
 
 
 def get_area_id(area_name, ticket):
@@ -219,7 +218,7 @@ def get_area_id(area_name, ticket):
     :return: DNA C area id
     """
     url = DNAC_URL + '/group?groupType=SITE'
-    header = {'content-type': 'application/json','X-Auth-Token': ticket}
+    header = {'content-type': 'application/json', 'X-Auth-Token': ticket}
     area_response = requests.get(url, headers=header, verify=False)
     area_json = area_response.json()
     area_list = area_json['response']
@@ -237,7 +236,7 @@ def get_site_id(site_name, ticket):
     :return: DNA C site id
     """
     url = DNAC_URL + '/group?groupType=SITE'
-    header = {'content-type': 'application/json','X-Auth-Token': ticket}
+    header = {'content-type': 'application/json', 'X-Auth-Token': ticket}
     site_response = requests.get(url, headers=header, verify=False)
     site_json = site_response.json()
     site_list = site_json['response']
@@ -254,7 +253,7 @@ def get_geo_info(address, google_key):
     :param google_key: Google API Key
     :return: longitude/latitude
     """
-    url = 'https://maps.googleapis.com/maps/api/geocode/json?address='+address+'&key='+google_key
+    url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=' + google_key
     header = {'content-type': 'application/json'}
     response = requests.get(url, headers=header, verify=False)
     response_json = response.json()
@@ -264,7 +263,11 @@ def get_geo_info(address, google_key):
 
 def main():
     """
-
+    This application will use the DNA Center REST APIs to create two new areas, three new sites, one floor.
+    It will use the Google Geolocation APIs to map addresses to their longitude and latitude coordinates required
+    by DNA Center during the configuration of new sites.
+    It will continue by assigning devices based on the Serial Numbers to each of these sites.
+    All the data required by this sample code could be easily imported from a CSV file.
     """
 
     # create a DNA C ticket
