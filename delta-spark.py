@@ -13,12 +13,13 @@ import time
 import difflib
 import requests
 import json
+import urllib3
 
 from code_init import SPARK_URL, SPARK_AUTH, SPARK_ROOM
 
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from urllib3.exceptions import InsecureRequestWarning
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # Disable insecure https warnings
+urllib3.disable_warnings(InsecureRequestWarning)  # Disable insecure https warnings
 
 
 def save_config():
