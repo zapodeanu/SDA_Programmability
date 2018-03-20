@@ -21,7 +21,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # Disable in
 
 # use the IP address or hostname of your 9300 switch
 
-HOST = '10.93.130.45'
+HOST = '10.93.130.21'
 
 # use the NETCONF port for your 9300 switch
 
