@@ -21,4 +21,5 @@
  
  - This application will run on IOS XE Guest Shell and detect when a configuration change occurs on the device
  - It will identify the difference between a baseline configuration and the updated running configuration
- - The delta will be posted to Spark Room, to notify about the change
+ - The device hostname will be identified
+ - The device hostname and configuration delta will be posted to Spark Room, to notify about the change
